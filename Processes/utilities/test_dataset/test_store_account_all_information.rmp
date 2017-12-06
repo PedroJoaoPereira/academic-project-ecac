@@ -12,7 +12,7 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve account_mensal_income_expense" width="90" x="45" y="34">
+      <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve test_account_mensal_income_expense" width="90" x="45" y="34">
         <parameter key="repository_entry" value="../../../Data/Data_Test/Modified/test_account_mensal_income_expense"/>
       </operator>
       <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve account_owner_age" width="90" x="45" y="136">
@@ -25,7 +25,7 @@
         <list key="key_attributes"/>
         <parameter key="keep_both_join_attributes" value="false"/>
       </operator>
-      <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve account_min_max_balance" width="90" x="45" y="238">
+      <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve test_account_min_max_balance" width="90" x="45" y="238">
         <parameter key="repository_entry" value="../../../Data/Data_Test/Modified/test_account_min_max_balance"/>
       </operator>
       <operator activated="true" class="join" compatibility="8.0.000" expanded="true" height="82" name="Join (2)" width="90" x="380" y="238">
@@ -52,10 +52,10 @@
       <operator activated="true" class="store" compatibility="8.0.000" expanded="true" height="68" name="Store" width="90" x="782" y="238">
         <parameter key="repository_entry" value="../../../Data/Data_Test/Modified/test_account_all_information"/>
       </operator>
-      <connect from_op="Retrieve account_mensal_income_expense" from_port="output" to_op="Join" to_port="left"/>
+      <connect from_op="Retrieve test_account_mensal_income_expense" from_port="output" to_op="Join" to_port="left"/>
       <connect from_op="Retrieve account_owner_age" from_port="output" to_op="Join" to_port="right"/>
       <connect from_op="Join" from_port="join" to_op="Join (2)" to_port="left"/>
-      <connect from_op="Retrieve account_min_max_balance" from_port="output" to_op="Join (2)" to_port="right"/>
+      <connect from_op="Retrieve test_account_min_max_balance" from_port="output" to_op="Join (2)" to_port="right"/>
       <connect from_op="Join (2)" from_port="join" to_op="Select Attributes" to_port="example set input"/>
       <connect from_op="Select Attributes" from_port="example set output" to_op="Store" to_port="input"/>
       <portSpacing port="source_input 1" spacing="0"/>
