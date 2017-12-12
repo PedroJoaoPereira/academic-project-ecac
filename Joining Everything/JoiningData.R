@@ -50,6 +50,27 @@ clients$birth_number <- as.Date(as.character(clients$birth_number), "%Y%m%d")
 clients$birth_year <- as.integer(format(clients$birth_number,"%Y"))
 clients$birth_number <- NULL
 
+all_info_train <- merge(all_train, clients, by.x = "owner_account_id", by.y = "client_id", all.x = TRUE)
+all_info_test <- merge(all_test, clients, by.x = "owner_account_id", by.y = "client_id", all.x = TRUE)
+
+all_info_train$date <- NULL
+all_info_train$gender.x <- NULL
+all_info_train$district_id.y <- NULL
+
+colnames(all_info_train)[1] <- "owner_id"
+colnames(all_info_train)[2] <- "district_id"
+colnames(all_info_train)[7] <- "owner_ager"
+colnames(all_info_train)[12] <- "gender"
+
+all_info_test$date <- NULL
+all_info_test$gender.x <- NULL
+all_info_test$district_id.y <- NULL
+
+colnames(all_info_test)[1] <- "owner_id"
+colnames(all_info_test)[2] <- "district_id"
+colnames(all_info_test)[7] <- "owner_ager"
+colnames(all_info_test)[12] <- "gender"
+
 # -----------------------------------------------------------------
 # load districts
 districts <- read.csv2("Processed Data Set/district.csv", TRUE, stringsAsFactors = FALSE)
@@ -76,40 +97,8 @@ districts$no..of.municipalities.with.inhabitants.2000.9999 <- NULL
 districts$no..of.municipalities.with.inhabitants..10000 <- NULL
 districts$no..of.cities <- NULL
 
-# -----------------------------------------------------------------
-# load dispositions
-dispositions <- read.csv2("Processed Data Set/disp.csv", TRUE, stringsAsFactors = FALSE)
-
-# merge clients and districts
-clients_districts <- merge(clients, districts, by.x = "district_id", by.y = "code")
-
-# merging with dispositions
-dispositions_m <- merge(clients_districts, dispositions, by = "client_id")
-dispositions_m <- subset(dispositions_m, dispositions_m$type != "DISPONENT")
-
-dispositions_m$type <- NULL
-dispositions_m$district_id <- NULL
-
-all_train$account_id <- NULL
-all_test$account_id <- NULL
-
-# merging with andre processed
-all_info_train <- merge(dispositions_m, all_train, by.x = "account_id", by.y = "owner_account_id", all.y = TRUE)
-all_info_test <- merge(dispositions_m, all_test, by.x = "account_id", by.y = "owner_account_id", all.y = TRUE)
-
-all_info_train$district_id <- NULL
-all_info_train$date <- NULL
-all_info_train$gender.y <- NULL
-all_info_train$owner_account_age <- NULL
-
-colnames(all_info_train)[3] <- "gender"
-
-all_info_test$district_id <- NULL
-all_info_test$date <- NULL
-all_info_test$gender.y <- NULL
-all_info_test$owner_account_age <- NULL
-
-colnames(all_info_test)[3] <- "gender"
+all_info_train <- merge(all_info_train, districts, by.x = "district_id", by.y = "code", all.x = TRUE)
+all_info_test <- merge(all_info_test, districts, by.x = "district_id", by.y = "code", all.x = TRUE)
 
 # -----------------------------------------------------------------
 # load loans
@@ -117,40 +106,69 @@ loans_train <- read.csv2("Processed Data Set/loan_train.csv", TRUE, stringsAsFac
 loans_test <- read.csv2("Processed Data Set/loan_test.csv", TRUE, stringsAsFactors = FALSE)
 
 all_info_train <- merge(all_info_train, loans_train, by.x = "account_id", by.y = "account_id", all.x = TRUE)
-
-all_info_train$loan_id <- NULL
-all_info_train$date <- NULL
-
 all_info_test <- merge(all_info_test, loans_test, by.x = "account_id", by.y = "account_id", all.x = TRUE)
 
-all_info_test$loan_id <- NULL
+all_info_train$date <- NULL
 all_info_test$date <- NULL
+
+all_info_train$amount[is.na(all_info_train$amount)] <- 0
+all_info_train$duration[is.na(all_info_train$duration)] <- 0
+all_info_train$payments[is.na(all_info_train$payments)] <- 0
+all_info_train$status[is.na(all_info_train$status)] <- 0
+
+all_info_test$amount[is.na(all_info_test$amount)] <- 0
+all_info_test$duration[is.na(all_info_test$duration)] <- 0
+all_info_test$payments[is.na(all_info_test$payments)] <- 0
+all_info_test$status[is.na(all_info_test$status)] <- 0
+
+all_info_train$amount <- as.integer(all_info_train$amount)
+all_info_train$duration <- as.integer(all_info_train$duration)
+all_info_train$payments <- as.integer(all_info_train$payments)
+all_info_train$status <- as.integer(all_info_train$status)
+
+all_info_test$amount <- as.integer(all_info_test$amount)
+all_info_test$duration <- as.integer(all_info_test$duration)
+all_info_test$payments <- as.integer(all_info_test$payments)
+all_info_test$status <- as.integer(all_info_test$status)
 
 # -----------------------------------------------------------------
 # load cards
 cards_train <- read.csv2("Processed Data Set/card_train.csv", TRUE, stringsAsFactors = FALSE)
 cards_test <- read.csv2("Processed Data Set/card_test.csv", TRUE, stringsAsFactors = FALSE)
 
+all_info_train <- merge(all_info_train, dispositions, by.x = "owner_id", by.y = "client_id", all.x = TRUE)
+all_info_test <- merge(all_info_test, dispositions, by.x = "owner_id", by.y = "client_id", all.x = TRUE)
+
+all_info_train$account_id.y <- NULL
+all_info_train$type <- NULL
+all_info_test$account_id.y <- NULL
+all_info_test$type <- NULL
+
+colnames(all_info_train)[2] <- "account_id"
+colnames(all_info_test)[2] <- "account_id"
+
 all_info_train <- merge(all_info_train, cards_train, by.x = "disp_id", by.y = "disp_id", all.x = TRUE)
-
-all_info_train$card_id <- NULL
-all_info_train$issued <- NULL
-
 all_info_test <- merge(all_info_test, cards_test, by.x = "disp_id", by.y = "disp_id", all.x = TRUE)
-
-all_info_test$card_id <- NULL
-all_info_test$issued <- NULL
 
 # -----------------------------------------------------------------
 # removing all ids
 
 all_info_train$disp_id <- NULL
 all_info_train$account_id <- NULL
-all_info_train$client_id <- NULL
+all_info_train$district_id <- NULL
+all_info_train$loan_id <- NULL
+all_info_train$card_id <- NULL
+all_info_train$issued <- NULL
 
 all_info_test$disp_id <- NULL
 all_info_test$account_id <- NULL
-all_info_test$client_id <- NULL
+all_info_test$district_id <- NULL
+all_info_test$loan_id <- NULL
+all_info_test$card_id <- NULL
+all_info_test$issued <- NULL
+
+all_info_train$type[is.na(all_info_train$type)] <- ""
+all_info_test$type[is.na(all_info_test$type)] <- ""
 
 # -----------------------------------------------------------------
 # creating files
