@@ -156,14 +156,12 @@ all_info_test <- merge(all_info_test, cards_test, by.x = "disp_id", by.y = "disp
 all_info_train$disp_id <- NULL
 all_info_train$account_id <- NULL
 all_info_train$district_id <- NULL
-all_info_train$loan_id <- NULL
 all_info_train$card_id <- NULL
 all_info_train$issued <- NULL
 
 all_info_test$disp_id <- NULL
 all_info_test$account_id <- NULL
 all_info_test$district_id <- NULL
-all_info_test$loan_id <- NULL
 all_info_test$card_id <- NULL
 all_info_test$issued <- NULL
 
