@@ -12,7 +12,7 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve account_all_information" width="90" x="45" y="34">
+      <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve test_account_all_information" width="90" x="45" y="34">
         <parameter key="repository_entry" value="../../../Data/Data_Test/Modified/test_account_all_information"/>
       </operator>
       <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve disposition" width="90" x="45" y="187">
@@ -121,7 +121,7 @@
       <operator activated="true" class="store" compatibility="8.0.000" expanded="true" height="68" name="Store" width="90" x="983" y="85">
         <parameter key="repository_entry" value="../../../Data/Data_Test/Modified/test_account_all_information_with_cc"/>
       </operator>
-      <connect from_op="Retrieve account_all_information" from_port="output" to_op="Join" to_port="left"/>
+      <connect from_op="Retrieve test_account_all_information" from_port="output" to_op="Join" to_port="left"/>
       <connect from_op="Retrieve disposition" from_port="output" to_op="Multiply" to_port="input"/>
       <connect from_op="Multiply" from_port="output 1" to_op="Select Attributes" to_port="example set input"/>
       <connect from_op="Multiply" from_port="output 2" to_op="Aggregate Num_Clients_Per_Account" to_port="example set input"/>

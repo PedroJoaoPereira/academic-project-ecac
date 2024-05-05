@@ -15,7 +15,7 @@
       <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve account" width="90" x="45" y="85">
         <parameter key="repository_entry" value="//ECAC_BankingProject/Data/account"/>
       </operator>
-      <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve transaction" width="90" x="45" y="289">
+      <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve test_transaction" width="90" x="45" y="289">
         <parameter key="repository_entry" value="../../../Data/Data_Test/transaction_test"/>
       </operator>
       <operator activated="true" class="aggregate" compatibility="8.0.000" expanded="true" height="82" name="Aggregate" width="90" x="246" y="289">
@@ -67,7 +67,7 @@
         <parameter key="repository_entry" value="../../../Data/Data_Test/Modified/test_account_min_max_balance"/>
       </operator>
       <connect from_op="Retrieve account" from_port="output" to_op="Join" to_port="left"/>
-      <connect from_op="Retrieve transaction" from_port="output" to_op="Aggregate" to_port="example set input"/>
+      <connect from_op="Retrieve test_transaction" from_port="output" to_op="Aggregate" to_port="example set input"/>
       <connect from_op="Aggregate" from_port="example set output" to_op="Join" to_port="right"/>
       <connect from_op="Join" from_port="join" to_op="Set Role" to_port="example set input"/>
       <connect from_op="Set Role" from_port="example set output" to_op="Rename" to_port="example set input"/>
