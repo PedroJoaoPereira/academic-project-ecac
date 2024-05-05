@@ -1,5 +1,7 @@
 # set working directory
 setwd("C:/Users/pedro/Desktop/Progs/Docs/5º Ano - 1º Semestre/ECAC/ECAC")
+# include libraries
+library(dplyr)
 
 # -----------------------------------------------------------------
 # loading data region
@@ -8,6 +10,7 @@ dispositions <- read.csv2("Processed Data Set/disp.csv", TRUE, stringsAsFactors 
 clients <- read.csv2("Processed Data Set/client.csv", TRUE, stringsAsFactors = FALSE)
 accounts <- read.csv2("Processed Data Set/account.csv", TRUE, stringsAsFactors = FALSE)
 districts <- read.csv2("Processed Data Set/district.csv", TRUE, stringsAsFactors = FALSE)
+transactions <- read.csv2("Processed Data Set/trans_train.csv", TRUE, stringsAsFactors = FALSE)
 
 # -----------------------------------------------------------------
 # dispositions data cleaning
@@ -55,6 +58,9 @@ clients$birth_number <- NULL
 # shows accounts data structure
 str(accounts)
 
+# remove irrelevant data
+accounts$date <- NULL
+
 # -----------------------------------------------------------------
 # districts data cleaning
 
@@ -73,27 +79,78 @@ districts$unemploymant.rate..96 <- as.numeric(districts$unemploymant.rate..96)
 districts$no..of.commited.crimes..95 <- as.integer(districts$no..of.commited.crimes..95)
 
 # -----------------------------------------------------------------
+# transactions data cleaning
+
+# shows transactions data structure
+str(transactions)
+
+# calculates average household payed
+households <- subset(transactions, transactions$k_symbol == "household")
+households$amount <- as.numeric(households$amount)
+households <- aggregate(households[,"amount"], list(account_id = households$account_id), mean)
+colnames(households)[2] <- "household"
+
+# calculates average pension received
+pensions <- subset(transactions, transactions$k_symbol == "old-age pension")
+pensions$amount <- as.numeric(pensions$amount)
+pensions <- aggregate(pensions[,"amount"], list(account_id = pensions$account_id), mean)
+colnames(pensions)[2] <- "pension"
+
+# parses string fields into numeric
+transactions$balance <- as.numeric(transactions$balance)
+
+# calculates average client's balance
+averageBalances <- aggregate(transactions[,"balance"], list(account_id = transactions$account_id), mean)
+colnames(averageBalances)[2] <- "avg_balances"
+
+# calculates average deviation of client's balance
+deviationBalances <- aggregate(transactions[,"balance"], list(account_id = transactions$account_id), sd)
+colnames(deviationBalances)[2] <- "sd_balances"
+
+# -----------------------------------------------------------------
 # merge datasets
 
-# merging dispositions with clients
-merged <- merge(dispositions, clients, by.x = "client_id", by.y = "client_id")
+# merging clients with districts
+merged <- merge(clients, districts, by.x = "district_id", by.y = "code")
 # removing irrelevant columns
-merged$disp_id <- NULL
 merged$district_id <- NULL
-
-# merging merged with accounts
-merged <- merge(merged, accounts, by.x = "account_id", by.y = "account_id")
-# removing irrelevant columns
-merged$date <- NULL
-
-# merging merged with districts
-merged <- merge(merged, districts, by.x = "district_id", by.y = "code")
-# removing irrelevant columns
-merged$region <- NULL
 merged$no..of.municipalities.with.inhabitants...499 <- NULL
 merged$no..of.municipalities.with.inhabitants.500.1999 <- NULL
 merged$no..of.municipalities.with.inhabitants.2000.9999 <- NULL
 merged$no..of.municipalities.with.inhabitants..10000 <- NULL
 merged$no..of.cities <- NULL
 
+# merging with dispositions
+merged <- merge(merged, dispositions, by = "client_id")
+# remove disponents information
+merged <- subset(merged, merged$type != "DISPONENT")
+# removing irrelevant columns
+merged$disp_id <- NULL
+merged$district_id <- NULL
+merged$type <- NULL
+
+# merging with accounts
+merged <- merge(merged, accounts, by = "account_id", all.x = TRUE)
+# removing irrelevant columns
+merged$date <- NULL
+merged$district_id <- NULL
+
+# merging with relevant transactions
+merged <- merge(merged, households, by = "account_id", all.x = TRUE)
+merged <- merge(merged, pensions, by = "account_id", all.x = TRUE)
+merged <- merge(merged, averageBalances, by = "account_id", all.x = TRUE)
+merged <- merge(merged, deviationBalances, by = "account_id", all.x = TRUE)
+
+# shows merged data structures
 str(merged)
+
+# -----------------------------------------------------------------
+# creates file with processed data structure
+
+# writing operation
+write.csv(merged, file = "Processed Data Set/Processed/processed_train.csv", row.names = FALSE)
+
+
+
+
+

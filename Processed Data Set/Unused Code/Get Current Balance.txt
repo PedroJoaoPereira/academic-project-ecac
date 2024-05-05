@@ -1,0 +1,3 @@
+balances <- transactions %>% group_by(account_id) %>% slice(which.max(date))
+balances <- subset(balances, select = c(account_id, balance))
+balances$balance <- as.numeric(balances$balance)
