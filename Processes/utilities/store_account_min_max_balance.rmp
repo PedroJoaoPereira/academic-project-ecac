@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="8.0.000">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="8.0.000" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve account" width="90" x="45" y="85">
+        <parameter key="repository_entry" value="//ECAC_BankingProject/Data/account"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="8.0.000" expanded="true" height="68" name="Retrieve transaction" width="90" x="45" y="289">
+        <parameter key="repository_entry" value="//ECAC_BankingProject/Data/transaction"/>
+      </operator>
+      <operator activated="true" class="aggregate" compatibility="8.0.000" expanded="true" height="82" name="Aggregate" width="90" x="246" y="289">
+        <parameter key="use_default_aggregation" value="false"/>
+        <parameter key="attribute_filter_type" value="all"/>
+        <parameter key="attribute" value=""/>
+        <parameter key="attributes" value=""/>
+        <parameter key="use_except_expression" value="false"/>
+        <parameter key="value_type" value="attribute_value"/>
+        <parameter key="use_value_type_exception" value="false"/>
+        <parameter key="except_value_type" value="time"/>
+        <parameter key="block_type" value="attribute_block"/>
+        <parameter key="use_block_type_exception" value="false"/>
+        <parameter key="except_block_type" value="value_matrix_row_start"/>
+        <parameter key="invert_selection" value="false"/>
+        <parameter key="include_special_attributes" value="false"/>
+        <parameter key="default_aggregation_function" value="average"/>
+        <list key="aggregation_attributes">
+          <parameter key="balance" value="minimum"/>
+          <parameter key="balance" value="maximum"/>
+        </list>
+        <parameter key="group_by_attributes" value="account_id"/>
+        <parameter key="count_all_combinations" value="false"/>
+        <parameter key="only_distinct" value="true"/>
+        <parameter key="ignore_missings" value="true"/>
+      </operator>
+      <operator activated="true" class="join" compatibility="8.0.000" expanded="true" height="82" name="Join" width="90" x="313" y="85">
+        <parameter key="remove_double_attributes" value="true"/>
+        <parameter key="join_type" value="inner"/>
+        <parameter key="use_id_attribute_as_key" value="false"/>
+        <list key="key_attributes">
+          <parameter key="account_id" value="account_id"/>
+        </list>
+        <parameter key="keep_both_join_attributes" value="false"/>
+      </operator>
+      <operator activated="true" class="set_role" compatibility="8.0.000" expanded="true" height="82" name="Set Role" width="90" x="447" y="289">
+        <parameter key="attribute_name" value="account_id"/>
+        <parameter key="target_role" value="id"/>
+        <list key="set_additional_roles"/>
+      </operator>
+      <operator activated="true" class="rename" compatibility="8.0.000" expanded="true" height="82" name="Rename" width="90" x="648" y="289">
+        <parameter key="old_name" value="minimum(balance)"/>
+        <parameter key="new_name" value="min_balance"/>
+        <list key="rename_additional_attributes">
+          <parameter key="maximum(balance)" value="max_balance"/>
+        </list>
+      </operator>
+      <operator activated="true" class="store" compatibility="8.0.000" expanded="true" height="68" name="Store" width="90" x="983" y="187">
+        <parameter key="repository_entry" value="//ECAC_BankingProject/Data/Data_Modified/account_min_max_balance"/>
+      </operator>
+      <connect from_op="Retrieve account" from_port="output" to_op="Join" to_port="left"/>
+      <connect from_op="Retrieve transaction" from_port="output" to_op="Aggregate" to_port="example set input"/>
+      <connect from_op="Aggregate" from_port="example set output" to_op="Join" to_port="right"/>
+      <connect from_op="Join" from_port="join" to_op="Set Role" to_port="example set input"/>
+      <connect from_op="Set Role" from_port="example set output" to_op="Rename" to_port="example set input"/>
+      <connect from_op="Rename" from_port="example set output" to_op="Store" to_port="input"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+    </process>
+  </operator>
+</process>
