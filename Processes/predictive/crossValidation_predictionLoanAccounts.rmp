@@ -40,7 +40,7 @@
         </list>
         <parameter key="keep_both_join_attributes" value="false"/>
       </operator>
-      <operator activated="true" class="join" compatibility="8.0.001" expanded="true" height="82" name="Join" width="90" x="514" y="85">
+      <operator activated="true" class="join" compatibility="8.0.001" expanded="true" height="82" name="Join" width="90" x="447" y="85">
         <parameter key="remove_double_attributes" value="true"/>
         <parameter key="join_type" value="inner"/>
         <parameter key="use_id_attribute_as_key" value="false"/>
@@ -49,7 +49,7 @@
         </list>
         <parameter key="keep_both_join_attributes" value="false"/>
       </operator>
-      <operator activated="true" class="select_attributes" compatibility="8.0.001" expanded="true" height="82" name="Select Attributes" width="90" x="648" y="85">
+      <operator activated="true" class="select_attributes" compatibility="8.0.001" expanded="true" height="82" name="Select Attributes" width="90" x="581" y="85">
         <parameter key="attribute_filter_type" value="subset"/>
         <parameter key="attribute" value=""/>
         <parameter key="attributes" value="avg_mensal_expenses|avg_mensal_income|status"/>
@@ -63,12 +63,12 @@
         <parameter key="invert_selection" value="false"/>
         <parameter key="include_special_attributes" value="false"/>
       </operator>
-      <operator activated="true" class="set_role" compatibility="8.0.001" expanded="true" height="82" name="Set Role" width="90" x="782" y="85">
+      <operator activated="true" class="set_role" compatibility="8.0.001" expanded="true" height="82" name="Set Role" width="90" x="715" y="85">
         <parameter key="attribute_name" value="status"/>
         <parameter key="target_role" value="label"/>
         <list key="set_additional_roles"/>
       </operator>
-      <operator activated="true" class="concurrency:cross_validation" compatibility="8.0.001" expanded="true" height="145" name="Cross Validation" width="90" x="916" y="85">
+      <operator activated="true" class="concurrency:cross_validation" compatibility="8.0.001" expanded="true" height="145" name="Cross Validation" width="90" x="983" y="85">
         <parameter key="split_on_batch_attribute" value="false"/>
         <parameter key="leave_one_out" value="false"/>
         <parameter key="number_of_folds" value="10"/>
@@ -77,7 +77,17 @@
         <parameter key="local_random_seed" value="1992"/>
         <parameter key="enable_parallel_execution" value="true"/>
         <process expanded="true">
-          <operator activated="true" class="multiply" compatibility="8.0.001" expanded="true" height="208" name="Multiply" width="90" x="45" y="34"/>
+          <operator activated="true" class="multiply" compatibility="8.0.001" expanded="true" height="229" name="Multiply" width="90" x="45" y="34"/>
+          <operator activated="true" class="weka:W-J48" compatibility="7.3.000" expanded="true" height="82" name="W-J48" width="90" x="179" y="952">
+            <parameter key="U" value="false"/>
+            <parameter key="C" value="0.25"/>
+            <parameter key="M" value="2.0"/>
+            <parameter key="R" value="false"/>
+            <parameter key="B" value="false"/>
+            <parameter key="S" value="false"/>
+            <parameter key="L" value="false"/>
+            <parameter key="A" value="false"/>
+          </operator>
           <operator activated="true" class="concurrency:parallel_random_forest" compatibility="8.0.001" expanded="true" height="103" name="Random Forest" width="90" x="179" y="799">
             <parameter key="number_of_trees" value="10"/>
             <parameter key="criterion" value="gain_ratio"/>
@@ -161,9 +171,9 @@
             <parameter key="criterion" value="gain_ratio"/>
             <parameter key="maximal_depth" value="20"/>
             <parameter key="apply_pruning" value="true"/>
-            <parameter key="confidence" value="0.1"/>
+            <parameter key="confidence" value="0.15"/>
             <parameter key="apply_prepruning" value="false"/>
-            <parameter key="minimal_gain" value="0.048"/>
+            <parameter key="minimal_gain" value="0.05"/>
             <parameter key="minimal_leaf_size" value="2"/>
             <parameter key="minimal_size_for_split" value="4"/>
             <parameter key="number_of_prepruning_alternatives" value="3"/>
@@ -176,8 +186,9 @@
           <connect from_op="Multiply" from_port="output 5" to_op="Perceptron" to_port="training set"/>
           <connect from_op="Multiply" from_port="output 6" to_op="k-NN" to_port="training set"/>
           <connect from_op="Multiply" from_port="output 7" to_op="Random Forest" to_port="training set"/>
-          <connect from_op="Decision Tree" from_port="model" to_port="model"/>
-          <connect from_op="Decision Tree" from_port="exampleSet" to_port="through 1"/>
+          <connect from_op="Multiply" from_port="output 8" to_op="W-J48" to_port="training set"/>
+          <connect from_op="W-J48" from_port="model" to_port="model"/>
+          <connect from_op="W-J48" from_port="exampleSet" to_port="through 1"/>
           <portSpacing port="source_training set" spacing="0"/>
           <portSpacing port="sink_model" spacing="0"/>
           <portSpacing port="sink_through 1" spacing="0"/>
