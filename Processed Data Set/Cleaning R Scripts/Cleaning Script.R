@@ -171,6 +171,10 @@ merged_test<- merge(merged_test, deviationBalances_test, by = "account_id", all.
 # account movements
 # todo
 
+all_train <- read.csv2("Processed Data Set/all_train.csv", TRUE, stringsAsFactors = FALSE)
+
+str(all_train)
+
 # -----------------------------------------------------------------
 # creates file with processed data structure
 
